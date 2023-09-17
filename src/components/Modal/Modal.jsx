@@ -1,12 +1,12 @@
-
 import { Component } from 'react';
-import   createPortal   from 'react-dom/client';
 // import PropTypes from 'prop-types';
-import style from '../Modal/modal.module.css';
+import { Overlay, ModalDiv } from './modal.styled';
+import { createPortal } from 'react-dom';
+// import style from './modal.module.css';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export default class Modal extends Component {
+class Modal extends Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
@@ -28,11 +28,23 @@ export default class Modal extends Component {
   };
 
   render() {
+    const { modalImage, imageAlt } = this.props;
+
     return createPortal(
-      <div className={style.Overlay} onClick={this.handleBackdropClick}>
-        <div className={style.Modal}>{this.props.children}</div>
-      </div>,
+      <Overlay onClick={this.handleBackdropClick}>
+        <ModalDiv>
+          <img src={modalImage} alt={imageAlt} />
+        </ModalDiv>
+      </Overlay>,
       modalRoot
     );
   }
 }
+
+// Modal.propTypes = {
+// modalImage: PropTypes.string.isRequired,
+// imageAlt: PropTypes.string.isRequired,
+// onClose: PropTypes.func.isRequired,
+// };
+
+export default Modal;

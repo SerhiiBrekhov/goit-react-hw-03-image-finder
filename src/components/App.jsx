@@ -1,9 +1,8 @@
 import { Component } from 'react';
 import fetchPictures from './API/api';
-import { ImageGallery } from './ImageGallery/ImageGallery';
+import ImageGallery from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
-import  {Loader}  from './Loader/Loader';
-import Modal from './Modal/Modal';
+import { Loader } from './Loader/Loader';
 import Searchbar from './Searchbar/Searchbar';
 import style from './Searchbar/searchbar.module.css';
 
@@ -20,10 +19,8 @@ export default class App extends Component {
     images: [],
     page: 1,
     showButton: false,
-    showModal: false,
     status: Status.IDLE,
-    modalImage: '',
-    imageAlt: '',
+    error: null,
   };
 
   componentDidUpdate(_, prevState) {
@@ -37,28 +34,30 @@ export default class App extends Component {
       this.setState({ status: Status.PENDING });
 
       fetchPictures(nextName, this.state.page)
-        .then(images => {
-          if (images.hits.length < 1) {
+        // .then(images => console.log(images))
+        .then(pictures => {
+          if (pictures.hits.length < 1) {
             this.setState({
               showButton: false,
               status: Status.IDLE,
             });
             return alert('No images on your query');
           }
-
+          // console.log(images);
           this.setState(prevState => ({
-            images: [...prevState.images, ...images.hits],
+            images: [...prevState.images, ...pictures.hits],
+            showButton:
+              this.state.page < Math.ceil(pictures.total / 12) ? true : false,
           }));
-
+        })
+        .catch(err => {
+          this.setState({ error: err.message });
+        })
+        .finally(() => {
           this.setState({
             status: Status.RESOLVED,
-            showButton:
-              this.state.page < Math.ceil(images.total / 12) ? true : false,
           });
-        })
-
-        .then(console.log(this.state.images))
-        .catch(error => console.log(error));
+        });
     }
   }
 
@@ -72,7 +71,7 @@ export default class App extends Component {
       page: 1,
       images: [],
       showButton: false,
-      showModal: false,
+      isOpen: false,
       status: Status.IDLE,
     });
   };
@@ -81,32 +80,10 @@ export default class App extends Component {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
-  handleModalAlt = event => {
-    this.setState({ imageAlt: event });
-  };
-
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
-  };
-
-  handleModalImage = (data) => {
-    // console.log(event);
-    this.toggleModal();
-    this.setState({ modalImage: data });
-  };
-
   render() {
-    const { images, status, showModal, modalImage, imageAlt, showButton } =
-      this.state;
-      console.log(modalImage, imageAlt)
+    const { images, status, showButton } = this.state;
 
-    const {
-      handleFormSubmit,
-      toggleModal,
-      handleModalImage,
-      handleModalAlt,
-      loadMoreImages,
-    } = this;
+    const { handleFormSubmit, loadMoreImages } = this;
 
     return (
       <>
@@ -118,22 +95,9 @@ export default class App extends Component {
 
         {status === 'pending' && <Loader />}
 
-        {images.length > 0 && (
-          <ImageGallery
-            showModal={toggleModal}
-            images={images}
-            handleModalImage={handleModalImage}
-            handleModalAlt={handleModalAlt}
-          />
-        )}
+        {images.length > 0 && <ImageGallery images={images} />}
 
         {showButton && <Button onClick={loadMoreImages} />}
-
-        {showModal && (
-          <Modal onClose={toggleModal}>
-            <img src={modalImage} alt={imageAlt} />
-          </Modal>
-        )}
       </>
     );
   }
