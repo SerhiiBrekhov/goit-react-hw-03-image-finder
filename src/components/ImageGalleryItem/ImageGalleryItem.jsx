@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import style from '../ImageGalleryItem/imageGalleryitem.module.css';
+import style from './imageGalleryitem.module.css';
 import Modal from '../Modal/Modal';
-
-// import PropTypes from 'prop-types';
+// import { Item, Img } from './img.styled';
+import PropTypes from 'prop-types';
 
 export class ImageGalleryItem extends Component {
   // }) => {
@@ -38,28 +38,26 @@ export class ImageGalleryItem extends Component {
             }}
           >
             <img
+              className={style.ImageGalleryItemImage}
               src={image.webformatURL}
               alt={image.tags}
-              className={style.ImageGalleryItem__image}
             />
+            {isOpen && (
+              <Modal
+                modalImage={this.state.modalImage}
+                imageAlt={this.state.imageAlt}
+                onClose={this.toggleModal}
+              />
+            )}
           </li>
         ))}
-
-        {isOpen && (
-          <Modal
-            modalImage={this.state.modalImage}
-            imageAlt={this.state.imageAlt}
-            onClose={this.toggleModal}
-          />
-        )}
       </>
     );
   }
 }
 
-// ImageGalleryItem.propTypes = {
-//   images: PropTypes.array.isRequired,
-//   handleModalImage: PropTypes.func.isRequired,
-//   handleModalAlt: PropTypes.func.isRequired,
-//   toggleModal: PropTypes.func.isRequired,
-// };
+ImageGalleryItem.propTypes = {
+  images: PropTypes.array.isRequired,
+  // handleModal: PropTypes.func.isRequired,
+  toggleModal: PropTypes.func.isRequired,
+};
