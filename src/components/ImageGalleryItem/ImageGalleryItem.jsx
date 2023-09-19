@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import style from './imageGalleryitem.module.css';
-import Modal from '../Modal/Modal';
+import Modalka from '../Modal/Modal';
 // import { Item, Img } from './img.styled';
 import PropTypes from 'prop-types';
 
@@ -20,7 +20,7 @@ export class ImageGalleryItem extends Component {
       modalImage: largeImageURL,
       imageAlt: tags,
     });
-    this.toggleModal();
+    // this.toggleModal();
   };
 
   render() {
@@ -35,6 +35,7 @@ export class ImageGalleryItem extends Component {
             className={style.ImageGalleryItem}
             onClick={() => {
               this.handleModal(image.largeImageURL, image.tags);
+              this.toggleModal();
             }}
           >
             <img
@@ -43,7 +44,7 @@ export class ImageGalleryItem extends Component {
               alt={image.tags}
             />
             {isOpen && (
-              <Modal
+              <Modalka
                 modalImage={this.state.modalImage}
                 imageAlt={this.state.imageAlt}
                 onClose={this.toggleModal}
@@ -59,5 +60,5 @@ export class ImageGalleryItem extends Component {
 ImageGalleryItem.propTypes = {
   images: PropTypes.array.isRequired,
   // handleModal: PropTypes.func.isRequired,
-  toggleModal: PropTypes.func.isRequired,
+  toggleModal: PropTypes.func,
 };

@@ -8,7 +8,7 @@
 }
 
 .ImageGalleryItemImage {
-  display: block;
+  /* display: block; */
 
   width: 100%;
   height: 230px;
